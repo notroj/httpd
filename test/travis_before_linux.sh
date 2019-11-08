@@ -2,6 +2,19 @@
 if ! test -v SKIP_TESTING; then
    svn export -q https://svn.apache.org/repos/asf/httpd/test/framework/trunk test/perl-framework
 fi
+
+httpd_version=`./build/get-version.sh all include/ap_release.h AP_SERVER`
+case $httpd_version in
+2.4.*) ;;
+*)
+   # Default APR version for > 2.4 is now 1.6.
+   if ! test -v APR_VERSION; then
+       APR_VERSION=1.6.5
+       APU_VERSION=1.6.1
+   fi
+   ;;
+esac
+
 if test -v APR_VERSION; then
     # For APR trunk the cached version at ~/root/apr-trunk will be
     # stale if the current trunk revision is different from that of
