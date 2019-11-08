@@ -97,16 +97,6 @@ before_install:
         cpanm --notest Net::SSL LWP::Protocol::https ExtUtils::Embed Test::More AnyEvent DateTime HTTP::DAV Protocol::HTTP2::Client FCGI;
     fi
   - HTTPD_VERSION="`./build/get-version.sh all include/ap_release.h AP_SERVER`"
-  - |
-    case $HTTD_VERSION in
-    2.4.*) ;;
-    *) # Default APR version for > 2.4 is now 1.6.
-       if ! test -v APR_VERSION; then
-         APR_VERSION=1.6.5
-         APU_VERSION=1.6.1
-       fi ;;
-    esac
-  - echo Configured APR: ${APR_VERSION-none} APR-util: ${APU_VERSION-none}
 
 before_script:
   - ./test/travis_before_${TRAVIS_OS_NAME}.sh
