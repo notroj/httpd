@@ -13,8 +13,7 @@ if test -v APR_VERSION; then
     fi
     if ! test -d $HOME/root/apr-${APR_VERSION}; then
         case $APR_VERSION in
-            trunk) svn export -r ${trunk_rev} ${trunk_url} $HOME/build/apr-trunk
-                   touch $HOME/root/apr-trunk/.revision-is-${trunk_rev} ;;
+            trunk) svn export -r ${trunk_rev} ${trunk_url} $HOME/build/apr-trunk ;;
             *) svn export -q https://svn.apache.org/repos/asf/apr/apr/tags/${APR_VERSION} \
                    $HOME/build/apr-${APR_VERSION} ;;
         esac
@@ -27,6 +26,9 @@ if test -v APR_VERSION; then
         ./configure ${APR_CONFIG} --prefix=$HOME/root/apr-${APR_VERSION}
         make -j2
         make install
+        if test -v trunk_rev; then
+            touch $HOME/root/apr-trunk/.revision-is-${trunk_rev}
+        fi
         popd
         APU_CONFIG="$APU_CONFIG --with-apr=$HOME/root/apr-${APR_VERSION}"
     fi
