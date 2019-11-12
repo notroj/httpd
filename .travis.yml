@@ -20,6 +20,7 @@ addons:
       - libsystemd-dev
       - libnghttp2-dev
       - libjansson-dev
+      - libpcre2-dev
 
 matrix:
   include:
