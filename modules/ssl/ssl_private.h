@@ -184,6 +184,10 @@
 #endif
 #endif /* defined(LIBRESSL_VERSION_NUMBER) */
 
+#if OPENSSL_VERSION_NUMBER < 0x10101000
+#define MODSSL_USE_SSLRAND
+#endif
+
 #if defined(OPENSSL_FIPS) || OPENSSL_VERSION_NUMBER >= 0x30000000L
 #define HAVE_FIPS
 #endif
@@ -687,7 +691,6 @@ typedef struct {
  * for safety.
  */
 typedef struct {
-    pid_t           pid;
     apr_pool_t     *pPool;
     BOOL            bFixed;
 
@@ -700,7 +703,11 @@ typedef struct {
     ap_socache_instance_t *sesscache_context;
 
     apr_global_mutex_t   *pMutex;
+
+#ifdef MODSSL_USE_SSLRAND
+    pid_t           pid; /* used for seeding after fork() */
     apr_array_header_t   *aRandSeed;
+#endif
     apr_hash_t     *tVHostKeys;
 
     /* A hash table of pointers to ssl_asn1_t structures.  The structures
@@ -1111,8 +1118,12 @@ void         modssl_set_io_callbacks(SSL *ssl, conn_rec *c, server_rec *s);
  * to allow an SSL renegotiation to take place. */
 int          ssl_io_buffer_fill(request_rec *r, apr_size_t maxlen);
 
+#ifdef MODSSL_USE_SSLRAND
 /**  PRNG  */
-int          ssl_rand_seed(server_rec *, apr_pool_t *, ssl_rsctx_t, char *);
+void         ssl_rand_seed(server_rec *, apr_pool_t *, ssl_rsctx_t, char *);
+#else
+#define      ssl_rand_seed(s, p, ctx, c) /* noop */
+#endif
 
 /**  Utility Functions  */
 char        *ssl_util_vhostid(apr_pool_t *, server_rec *);
