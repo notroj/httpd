@@ -11,7 +11,6 @@ if test -v TEST_LOGNO; then
             xargs perl docs/log-message-tags/update-log-msg-tags
         git diff --exit-code .
         : PASSED
-        exit 0
     else
         set -o pipefail
         if find server modules os -name \*.c | \
@@ -20,9 +19,31 @@ if test -v TEST_LOGNO; then
             exit 1
         else
             : PASSED
-            exit 0
         fi
+        set +o pipefail
     fi
+
+    mmn=`echo MODULE_MAGIC_NUMBER_MAJOR.MODULE_MAGIC_NUMBER_MINOR \
+            | cpp -include ./include/ap_mmn.h  | sed '/^#/d;s/ //g;'`
+    if grep -C1 --color=always "\* $mmn" include/ap_mmn.h; then
+        : PASSED - Module Magic Number ${mmn} documented
+    else
+        : FAILED - Module Magic Number ${mmn} not document in include/ap_mmn.h
+        exit 1
+    fi
+
+    docmmn=`sed -n '/^ \* 20[0-9]*\.[0-9]* (/{;s/^...//;s/ .*//;p;}' include/ap_mmn.h | tail -n1`
+    if test -z "$docmmn"; then
+        : WARNING - could not find last-documented MMN
+    elif test "$docmmn" != "$mmn"; then
+        : FAILED - last documented MMN of $docmmn does not match defined MMN of $mmn
+        grep -C1 --color=always "\* $docmmn" include/ap_mmn.h
+        exit 1
+    else
+        : PASSED - documented MMN $docmmn matches current defined MMN
+    fi
+
+    exit 0
 fi
 
 ### Installed apr/apr-util don't include the *.m4 files but the
