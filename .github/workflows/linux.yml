@@ -322,6 +322,7 @@ jobs:
     - name: Set environment variables
       run: |
         echo "${{ matrix.env }}" >> $GITHUB_ENV
+        echo OS=$ImageOS Version=$ImageVersion
         echo JOBID=`echo "OS=$ImageOS Version=$ImageVersion ${{ matrix.notest-cflags }} ${{ matrix.env }} ${{ matrix.config }}" \
            | md5sum - | sed 's/ .*//'` >> $GITHUB_ENV
     # https://github.com/actions/runner-images/issues/9491#issuecomment-1989718917
