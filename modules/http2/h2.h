@@ -17,6 +17,7 @@
 #ifndef __mod_h2__h2__
 #define __mod_h2__h2__
 
+#include <ap_config.h>
 #include <apr_version.h>
 #include <ap_mmn.h>
 
@@ -94,6 +95,10 @@ extern const char *H2_MAGIC_TOKEN;
 #define H2_INITIAL_WINDOW_SIZE      ((64*1024)-1)
 
 #define H2_STREAM_CLIENT_INITIATED(id)      (id&0x01)
+
+#ifndef AP_ARRAY_LEN
+#define AP_ARRAY_LEN(a)          (sizeof(a)/sizeof((a)[0]))
+#endif
 
 #define H2MAX(x,y) ((x) > (y) ? (x) : (y))
 #define H2MIN(x,y) ((x) < (y) ? (x) : (y))
