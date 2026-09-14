@@ -1183,8 +1183,7 @@ static int cfg_trim_line(char *buf)
     while (apr_isspace(*start))
         ++start;
     /* blast trailing whitespace */
-    ap_cstr_stripws(start);
-    end = start + strlen(start);
+    end = ap_cstr_stripws(start);
     /* Zap leading whitespace by shifting */
     if (start != buf)
         memmove(buf, start, end - start + 1);
@@ -3703,7 +3702,7 @@ static const unsigned char ucharmap[256] = {
 };
 #endif
 
-AP_DECLARE(void) ap_cstr_stripws(char *str)
+AP_DECLARE(char *) ap_cstr_stripws(char *str)
 {
     char *end = str + strlen(str);
 
@@ -3711,6 +3710,8 @@ AP_DECLARE(void) ap_cstr_stripws(char *str)
         --end;
     }
     *end = '\0';
+
+    return end;
 }
 
 AP_DECLARE(int) ap_cstr_casecmp(const char *s1, const char *s2)

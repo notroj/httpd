@@ -2783,8 +2783,9 @@ AP_DECLARE(int) ap_array_str_contains(const apr_array_header_t *array,
 /**
  * Strip trailing whitespace from a NUL-terminated string in place.
  * @param str String to modify
+ * @return Pointer to the terminating NUL of the modified string
  */
-AP_DECLARE(void) ap_cstr_stripws(char *str);
+AP_DECLARE(char *) ap_cstr_stripws(char *str);
 
 /**
  * Perform a case-insensitive comparison of two strings @a str1 and @a str2,

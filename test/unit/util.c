@@ -107,9 +107,10 @@ HTTPD_START_LOOP_TEST(cstr_stripws_strips_trailing_whitespace, ap_cstr_stripws_c
 {
     const struct ap_cstr_stripws_case *c = &ap_cstr_stripws_cases[_i];
     char *str = apr_pstrdup(g_pool, c->input);
+    char *end = ap_cstr_stripws(str);
 
-    ap_cstr_stripws(str);
     ck_assert_str_eq(str, c->expected);
+    ck_assert_ptr_eq(end, str + strlen(c->expected));
 }
 END_TEST
 
