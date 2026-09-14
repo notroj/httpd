@@ -1,0 +1,3 @@
+  *) core: Add ap_cstr_stripws() to strip trailing whitespace from a string,
+     and use it to avoid undefined behaviour when handling empty response
+     header values.  [Robert McConnell <robert mcc0nnell.org>]
