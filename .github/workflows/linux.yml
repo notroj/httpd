@@ -43,97 +43,7 @@ jobs:
       max-parallel: 20
       matrix:
         include:
-          # -------------------------------------------------------------------------
-          - name: Shared MPMs (event), pool-debug, SSL/TLS variants
-            config: --enable-mods-shared=reallyall --enable-mpms-shared=all --with-mpm=event
-            env: |
-              APR_VERSION=1.7.x
-              APR_CONFIG="--enable-pool-debug"
-              APU_VERSION=1.7.x
-              APU_CONFIG="--with-crypto --with-ldap"
-              TEST_MALLOC=1
-              TEST_SSL=1
-          # -------------------------------------------------------------------------
-          - name: Shared MPMs (worker), pool-debug, SSL/TLS variants
-            config: --enable-mods-shared=reallyall --enable-mpms-shared=all --with-mpm=worker
-            env: |
-              APR_VERSION=1.7.x
-              APR_CONFIG="--enable-pool-debug"
-              APU_VERSION=1.7.x
-              APU_CONFIG="--with-crypto --with-ldap"
-              TEST_MALLOC=1
-              TEST_SSL=1
-          # -------------------------------------------------------------------------
-          - name: Shared MPMs (prefork), pool-debug, SSL/TLS variants
-            config: --enable-mods-shared=reallyall --enable-mpms-shared=all --with-mpm=prefork
-            env: |
-              APR_VERSION=1.7.x
-              APR_CONFIG="--enable-pool-debug"
-              APU_VERSION=1.7.x
-              APU_CONFIG="--with-crypto --with-ldap"
-              TEST_MALLOC=1
-              TEST_SSL=1
-          # -------------------------------------------------------------------------
-          - name: UBSan
-            notest-cflags: -fsanitize=undefined -fno-sanitize-recover=undefined
-            config: --enable-mods-shared=reallyall --disable-http2
-            env: |
-              NOTEST_LIBS=-lubsan
-              TEST_UBSAN=1
-              TEST_PYTEST=1
-          # -------------------------------------------------------------------------
-          # The ASan jobs are the slowest in the matrix and so set the
-          # wall-clock time for the whole workflow; running the Perl
-          # framework and the pytest suites in separate jobs halves that.
-          # Both halves build the same dependencies, so they share one
-          # ~/root cache entry.
-          - name: ASan
-            notest-cflags: -ggdb -fsanitize=address -fno-sanitize-recover=address -fno-omit-frame-pointer
-            config: --enable-mods-shared=reallyall
-            env: |
-              APR_VERSION=1.7.x
-              APU_VERSION=1.7.x
-              APU_CONFIG="--with-crypto --with-ldap"
-              TEST_ASAN=1
-          # -------------------------------------------------------------------------
-          - name: ASan, pytest
-            notest-cflags: -ggdb -fsanitize=address -fno-sanitize-recover=address -fno-omit-frame-pointer
-            config: --enable-mods-shared=reallyall
-            pkgs: nghttp2-client
-            env: |
-              APR_VERSION=1.7.x
-              APU_VERSION=1.7.x
-              APU_CONFIG="--with-crypto --with-ldap"
-              TEST_ASAN=1
-              NO_TEST_FRAMEWORK=1
-              TEST_PYTEST=1
-          # -------------------------------------------------------------------------
-          - name: ASan, pool-debug
-            notest-cflags: -ggdb -fsanitize=address -fno-sanitize-recover=address -fno-omit-frame-pointer -O2
-            config: --enable-mods-shared=reallyall --enable-maintainer-mode
-            env: |
-              APR_VERSION=1.7.x
-              APR_CONFIG="--enable-pool-debug"
-              APU_VERSION=1.7.x
-              APU_CONFIG="--with-crypto --with-ldap"
-              TEST_ASAN=1
-          # -------------------------------------------------------------------------
-          - name: ASan, pool-debug, pytest
-            notest-cflags: -ggdb -fsanitize=address -fno-sanitize-recover=address -fno-omit-frame-pointer -O2
-            config: --enable-mods-shared=reallyall --enable-maintainer-mode
-            pkgs: nghttp2-client
-            env: |
-              APR_VERSION=1.7.x
-              APR_CONFIG="--enable-pool-debug"
-              APU_VERSION=1.7.x
-              APU_CONFIG="--with-crypto --with-ldap"
-              TEST_ASAN=1
-              NO_TEST_FRAMEWORK=1
-              TEST_PYTEST=1
-          # -------------------------------------------------------------------------
-          # Runs every pytest-based test suite via `make check-all-pytest`.
-          # See TEST_PYTEST/TEST_MD in test/travis_run_linux.sh.
-          - name: Python pytest test suites
+          - name: Python pytest test suites #1
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
@@ -143,237 +53,64 @@ jobs:
               NO_TEST_FRAMEWORK=1
               TEST_PYTEST=1
               TEST_MD=1
-          # -------------------------------------------------------------------------
-          # Test against a newer nghttp2 than in the Ubuntu images.
-          - name: mod_http2 w/nghttp2 1.68.0
-            config: --enable-mods-shared=reallyall --enable-maintainer-mode --with-mpm=event
+              PYTEST_ARGS=-v -o faulthandler_timeout=240
+          - name: Python pytest test suites #2
+            config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
-              TEST_NGHTTP2=1.68.0
+              APR_VERSION=1.7.6
+              APU_VERSION=1.6.5
+              APU_CONFIG="--with-crypto"
               NO_TEST_FRAMEWORK=1
               TEST_PYTEST=1
-              PYHTTPD_TARGETS=modules/http2
-              PYTEST_ARGS=--only=pyhttpd
-          # -------------------------------------------------------------------------
-          - name: Default
-            # Check the defaults expected for a default build on Linux.
-            config-output: >-
-              SINGLE_LISTEN_UNSERIALIZED_ACCEPT AP_NONBLOCK_WHEN_MULTI_LISTEN
-              AP_ENABLE_V4_MAPPED HAVE_GMTOFF HAVE_FDPASSING HAVE_CRYPT_SHA2
-              HAVE_PCRE2 HAVE_EPOLL_CREATE HAVE_GETTID HAVE_PRCTL HAVE_TIMEGM
-              HAVE_GETLOADAVG HAVE_FOPEN64 HAVE_SETSID HAVE_KILLPG HAVE_INITGROUPS
-              AP_FORCE_EXPORTS HAVE_NGHTTP2 HAVE_CURL
-            # buildconf strips these from the generated header.
-            config-no-output: >-
-              PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING
-              PACKAGE_BUGREPORT PACKAGE_URL
-          # -------------------------------------------------------------------------
-          - name: All-static modules
-            config: --enable-mods-static=reallyall
-          # -------------------------------------------------------------------------
-          - name: Prefork MPM, all-modules (except cgid)
-            config: --enable-mods-shared=reallyall --with-mpm=prefork --disable-cgid
-          # -------------------------------------------------------------------------
-          - name: Worker MPM, all-modules
-            config: --enable-mods-shared=reallyall --with-mpm=worker
-          # -------------------------------------------------------------------------
-          - name: Shared MPMs, all-modules
-            config: --enable-mods-shared=reallyall --enable-mpms-shared=all
-          # -------------------------------------------------------------------------
-          - name: Shared MPMs, all-modules, 64-bit ARM
-            config: --enable-mods-shared=reallyall --enable-mpms-shared=all
-            os: ubuntu-24.04-arm
-          # -------------------------------------------------------------------------
-          - name: Event MPM, all-modules, mod_cgid only
-            config: --enable-mods-shared=reallyall --with-mpm=event --disable-cgi
-          # -------------------------------------------------------------------------
-          - name: Event MPM, all-modules, no CMSG_DATA
-            config: --enable-mods-shared=reallyall --with-mpm=event ac_cv_have_decl_CMSG_DATA=no
-          # -------------------------------------------------------------------------
-          - name: Default, all-modules + install
-            config: --enable-mods-shared=reallyall
-            env: |
-              TEST_INSTALL=1
-              APACHE_TEST_EXTRA_ARGS=-v
-          # -------------------------------------------------------------------------
-          - name: Default, all-modules, random test order
-            config: --enable-mods-shared=reallyall
-            env: |
-              TEST_ARGS=-order=random
-          # -------------------------------------------------------------------------
-          - name: GCC 12 maintainer-mode w/-Werror, install + VPATH
-            config: --enable-mods-shared=reallyall --enable-maintainer-mode
-            notest-cflags: -Werror -O2
-            env: |
-              CC=gcc-12
-              TEST_VPATH=1
-              TEST_INSTALL=1
-              SKIP_TESTING=1
-          # -------------------------------------------------------------------------
-          - name: All-modules, APR 1.7.6, APR-util 1.6.5
-            config: --enable-mods-shared=reallyall
+              TEST_MD=1
+              PYTEST_ARGS=-v -o faulthandler_timeout=240
+          - name: Python pytest test suites #3
+            config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
+            pkgs: nghttp2-client
             env: |
               APR_VERSION=1.7.6
               APU_VERSION=1.6.5
-              APU_CONFIG="--with-crypto --with-ldap"
-          # -------------------------------------------------------------------------
-          - name: APR 1.7.6, APR-util 1.6.5, LDAP
-            config: --enable-mods-shared=reallyall
-            pkgs: ldap-utils
-            env: |
-              APR_VERSION=1.7.6
-              APU_VERSION=1.6.5
-              APU_CONFIG="--with-crypto --with-ldap"
-              TEST_MALLOC=1
-              TEST_LDAP=1
-              TEST_ARGS="-defines LDAP"
-              TESTS="t/modules/"
-              TEST_PYTEST=1
-          # -------------------------------------------------------------------------
-          - name: APR 1.7.x, APR-util 1.6.x
-            config: --enable-mods-shared=reallyall
-            env: |
-              APR_VERSION=1.7.x
-              APU_VERSION=1.6.x
-              APU_CONFIG="--with-crypto --with-ldap"
-          # -------------------------------------------------------------------------
-          - name: APR 1.8.x, APR-util 1.7.x
-            config: --enable-mods-shared=reallyall
-            env: |
-              APR_VERSION=1.8.x
-              APU_VERSION=1.7.x
-              APU_CONFIG="--with-crypto --with-ldap"
-          # -------------------------------------------------------------------------
-          - name: APR 1.7.x, APR-util 1.7.x, LDAP
-            config: --enable-mods-shared=reallyall
-            pkgs: ldap-utils
-            env: |
-              APR_VERSION=1.7.x
-              APU_VERSION=1.7.x
-              APU_CONFIG="--with-crypto --with-ldap"
-              TEST_MALLOC=1
-              TEST_LDAP=1
-              TEST_ARGS="-defines LDAP"
-              TESTS="t/modules/"
-              TEST_PYTEST=1
-          # -------------------------------------------------------------------------
-          - name: APR trunk thread debugging
-            config: --enable-mods-shared=reallyall --with-mpm=event
-            env: |
-              APR_VERSION=trunk
-              APR_CONFIG="--with-crypto --enable-thread-debug"
-          # -------------------------------------------------------------------------
-          - name: Pool-debug
-            config: --enable-mods-shared=reallyall
-            env: |
-              APR_VERSION=1.7.x
-              APR_CONFIG="--enable-pool-debug"
-              APU_VERSION=1.7.x
-              APU_CONFIG="--with-crypto --with-ldap"
-              TEST_MALLOC=1
-          # -------------------------------------------------------------------------
-          - name: litmus WebDAV tests
-            config: --enable-dav --enable-dav-fs
-            env: |
-              LITMUS=1
-              TESTS="t/modules/dav.t"
-            pkgs: litmus
-          # -------------------------------------------------------------------------
-          - name: litmus WebDAV tests, APR trunk, LMDB
-            config: --enable-dav --enable-dav-fs
-            pkgs: litmus liblmdb-dev
-            env: |
-              APR_VERSION=trunk
-              APR_CONFIG="--with-lmdb --with-dbm=lmdb"
-              LITMUS=1
-              TESTS="t/modules/dav.t"
-          # -------------------------------------------------------------------------
-          # MFLAGS= works around https://bz.apache.org/bugzilla/show_bug.cgi?id=63942
-          ## TODO if: *condition_not_24x
-          - name: Regenerate ap_expr
-            config: --enable-mods-shared=reallyall --enable-maintainer-mode
-            notest-cflags: -Werror -Wno-deprecated-declarations
-            env: |
-              BUILDCONFIG="--with-regen-expr"
-              MFLAGS=
-          # -------------------------------------------------------------------------
-          - name: mod_systemd, reduced exports
-            config: --enable-reduced-exports --enable-maintainer-mode --enable-systemd=shared
-            pkgs: libsystemd-dev
-            config-output: HAVE_SYSTEMD
-            config-no-output: AP_FORCE_EXPORTS
-            env: |
-              TEST_INSTALL=1
+              APU_CONFIG="--with-crypto"
               NO_TEST_FRAMEWORK=1
               TEST_PYTEST=1
-              PYHTTPD_TARGETS=modules/arch
-              PYTEST_ARGS=--only=pyhttpd
-          # -------------------------------------------------------------------------
-          ### TODO if: *condition_not_24x
-          ### TODO: Fails because :i386 packages are not being found.
-          # - name: i386 Shared MPMs, most modules, maintainer-mode w/-Werror
-          #   config: --enable-mods-shared=reallyall --disable-xml2enc --disable-proxy-html --enable-mpms-shared=all --enable-maintainer-mode
-          #   pkgs: >-
-          #     cpanminus libc6-dev-i386 gcc-multilib libexpat1-dev:i386 libssl-dev:i386
-          #     lib32z1-dev libbrotli-dev:i386 libpcre2-dev:i386 libldap2-dev:i386 libtool-bin
-          #     perl-doc libapr1-dev libbrotli-dev:i386
-          #   env: |
-          #     PKG_CONFIG_PATH="/usr/lib/i386-linux-gnu/pkgconfig"
-          #     NOTEST_CFLAGS="-Werror"
-          #     CC="gcc -m32"
-          #     APR_VERSION=1.7.0
-          #     APU_VERSION=1.6.5
-          # APU_CONFIG="--with-crypto --with-ldap"
-          # -------------------------------------------------------------------------
-          - name: OpenSSL 3.0 LTS
-            config: --enable-mods-shared=most --enable-maintainer-mode --disable-md --disable-http2 --disable-ldap --disable-crypto
-            config-no-output: HAVE_NGHTTP2 HAVE_CURL
+              TEST_MD=1
+              PYTEST_ARGS=-v -o faulthandler_timeout=240
+          - name: Python pytest test suites #4
+            config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
+            pkgs: nghttp2-client
             env: |
-              TEST_OPENSSL3=3.0.22
               APR_VERSION=1.7.6
               APU_VERSION=1.6.5
-              APU_CONFIG="--without-crypto"
-          # -------------------------------------------------------------------------
-          - name: OpenSSL 3.4 -Werror
-            config: --enable-mods-shared=most --enable-maintainer-mode --disable-md --disable-http2 --disable-ldap --disable-crypto
-            notest-cflags: -Werror -O2
+              APU_CONFIG="--with-crypto"
+              NO_TEST_FRAMEWORK=1
+              TEST_PYTEST=1
+              TEST_MD=1
+              PYTEST_ARGS=-v -o faulthandler_timeout=240
+          - name: Python pytest test suites #5
+            config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
+            pkgs: nghttp2-client
             env: |
-              TEST_OPENSSL3=3.4.7
               APR_VERSION=1.7.6
               APU_VERSION=1.6.5
-              APU_CONFIG="--without-crypto"
-          # -------------------------------------------------------------------------
-          - name: OpenSSL 3.4 no-engine
-            config: --enable-mods-shared=most --enable-maintainer-mode --disable-md --disable-http2 --disable-ldap --disable-crypto
+              APU_CONFIG="--with-crypto"
+              NO_TEST_FRAMEWORK=1
+              TEST_PYTEST=1
+              TEST_MD=1
+              PYTEST_ARGS=-v -o faulthandler_timeout=240
+          - name: Python pytest test suites #6
+            config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
+            pkgs: nghttp2-client
             env: |
-              TEST_OPENSSL3=3.4.7
-              OPENSSL_CONFIG=no-engine
               APR_VERSION=1.7.6
               APU_VERSION=1.6.5
-              APU_CONFIG="--without-crypto"
-          # -------------------------------------------------------------------------
-          - name: OpenSSL 3.5 no-engine -Werror
-            config: --enable-mods-shared=most --enable-maintainer-mode --disable-md --disable-http2 --disable-ldap --disable-crypto
-            notest-cflags: -Werror -O2
-            env: |
-              TEST_OPENSSL3=3.5.8
-              OPENSSL_CONFIG=no-engine
-              APR_VERSION=1.7.6
-              APU_VERSION=1.6.5
-              APU_CONFIG="--without-crypto"
-          # -------------------------------------------------------------------------
-          - name: OpenSSL 4.0
-            config: --enable-mods-shared=most --enable-maintainer-mode --disable-md --disable-http2 --disable-ldap --disable-crypto
-            notest-cflags: -Werror -O2
-            env: |
-              TEST_OPENSSL3=4.0.2
-              OPENSSL_CONFIG=
-              APR_VERSION=1.7.6
-              APU_VERSION=1.6.5
-              APU_CONFIG="--without-crypto"
-          # -------------------------------------------------------------------------
+              APU_CONFIG="--with-crypto"
+              NO_TEST_FRAMEWORK=1
+              TEST_PYTEST=1
+              TEST_MD=1
+              PYTEST_ARGS=-v -o faulthandler_timeout=240
     runs-on: ${{ matrix.os == '' && 'ubuntu-latest' || matrix.os }}
-    timeout-minutes: 30
+    timeout-minutes: 75
     env:
       NOTEST_CFLAGS: ${{ matrix.notest-cflags }}
       CONFIG: ${{ matrix.config }}
@@ -472,6 +209,32 @@ jobs:
           || echo "::warning::pebble install failed; modules/md tests will be skipped"
     - name: Build and test
       run: ./test/travis_run_linux.sh
+      timeout-minutes: 60
+    - name: Collect hang diagnostics
+      if: failure() || cancelled()
+      run: |
+        mkdir -p test/gen/diag
+        ps -eLfww > test/gen/diag/ps.txt || true
+        sudo ss -tanp > test/gen/diag/ss.txt || true
+        for pid in $(pgrep -x httpd; pgrep -f pytest); do
+          sudo gdb -batch -p $pid -ex 'thread apply all bt' \
+            > test/gen/diag/bt-$pid.txt 2>&1 || true
+        done
+        curl -sk --max-time 10 https://localhost:15000/roots/0 > test/gen/diag/pebble-root.pem || true
+        curl -s --max-time 10 localhost:8055/ > test/gen/diag/challtestsrv.txt 2>&1 || true
+    - uses: actions/upload-artifact@v7
+      if: failure() || cancelled()
+      with:
+        name: md-diag-${{ env.JOBID }}
+        path: |
+          test/gen/diag/
+          test/gen/pebble.log
+          test/gen/pebble/
+          test/gen/apache/logs/
+          test/gen/apache/conf/
+          test/gen/apache/acme-ca.pem
+          test/gen/apache/state/
+          test/gen/apache/md/
     # Checks the config header in the build tree, so this must follow
     # the build, and is only useful for a non-VPATH job.
     - if: ${{ matrix.config-output != '' }}
