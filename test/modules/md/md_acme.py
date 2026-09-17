@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import signal
 import subprocess
 import time
 from abc import ABCMeta, abstractmethod
@@ -58,7 +59,9 @@ class MDPebbleRunner(ACMEServer):
         env = {}
         env.update(os.environ)
         env['PEBBLE_VA_NOSLEEP'] = '1'
-        self._log = open(f'{self.env.gen_dir}/pebble.log', 'w')
+        self._log = open(f'{self.env.gen_dir}/pebble.log', 'a')
+        self._log.write(f'==== {datetime.now()} starting pebble ({self._current})\n')
+        self._log.flush()
         self._pebble = subprocess.Popen(args=args, env=env,
                                         stdout=self._log, stderr=self._log)
         t = Thread(target=monitor_proc, args=(self.env, self._pebble))
@@ -83,12 +86,20 @@ class MDPebbleRunner(ACMEServer):
         assert r.exit_code == 0, f"{r}"
 
     def stop(self):
-        if self._pebble:
-            self._pebble.terminate()
-            self._pebble = None
-        if self._challtestsrv:
-            self._challtestsrv.terminate()
-            self._challtestsrv = None
+        # Diagnostic only: SIGQUIT makes Go dump every goroutine to stderr,
+        # i.e. pebble.log, before exiting.
+        if self._log:
+            self._log.write(f'==== {datetime.now()} stopping pebble\n')
+            self._log.flush()
+        for proc in (self._pebble, self._challtestsrv):
+            if proc:
+                proc.send_signal(signal.SIGQUIT)
+                try:
+                    proc.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+        self._pebble = None
+        self._challtestsrv = None
         if self._log:
             self._log.close()
             self._log = None
