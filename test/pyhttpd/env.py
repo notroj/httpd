@@ -799,6 +799,11 @@ class HttpdTestEnv:
             fd.write('\n'.join(lines))
             fd.write('\n')
 
+    # A server which accepts a connection and never answers (e.g. a
+    # stopping parent, whose listeners stay open while it reaps its
+    # children) would otherwise hang the liveness probes.
+    PROBE_OPTIONS = ['--max-time', '5']
+
     def is_live(self, url: str = None, timeout: timedelta = None):
         if url is None:
             url = self._http_base
@@ -809,7 +814,8 @@ class HttpdTestEnv:
         while datetime.now() < try_until:
             # noinspection PyBroadException
             try:
-                r = self.curl_get(url, insecure=True)
+                r = self.curl_get(url, insecure=True,
+                                  options=self.PROBE_OPTIONS)
                 if r.exit_code == 0:
                     return True
                 time.sleep(.1)
@@ -834,7 +840,7 @@ class HttpdTestEnv:
         while datetime.now() < try_until:
             # noinspection PyBroadException
             try:
-                r = self.curl_get(url)
+                r = self.curl_get(url, options=self.PROBE_OPTIONS)
                 if r.exit_code != 0:
                     return True
                 time.sleep(.1)
@@ -983,13 +989,34 @@ class HttpdTestEnv:
             return 0 if self.is_live(self._http_base, timeout=timeout) else -1
         return r.exit_code
 
+    def _await_pid_exit(self, pid: int, timeout: timedelta) -> bool:
+        try_until = datetime.now() + timeout
+        while datetime.now() < try_until:
+            try:
+                os.kill(pid, 0)
+            except ProcessLookupError:
+                return True
+            except PermissionError:
+                pass
+            time.sleep(.1)
+        return False
+
     def apache_stop(self):
         if self.isWindows:
             self._win_stop()
             timeout = timedelta(seconds=10)
             return 0 if self.is_dead(self._http_base, timeout=timeout) else -1
+        pid = self.read_pid_file()
         r = self._run_apachectl("stop")
         if r.exit_code == 0:
+            # "-k stop" only signals the parent, which can take a while
+            # to reap its children (up to a SIGKILL); until it has
+            # gone, "-k start" finds it "already running" and exits 0
+            # without starting anything.
+            if pid is not None and \
+                    not self._await_pid_exit(pid, timedelta(seconds=30)):
+                log.warning(f"httpd parent {pid} still running after stop")
+                return -1
             timeout = timedelta(seconds=10)
             return 0 if self.is_dead(self._http_base, timeout=timeout) else -1
         return r
@@ -1008,7 +1035,7 @@ class HttpdTestEnv:
             self._win_stop()
             rv = self._win_start()
             return 0 if rv != 0 else (0 if self.is_dead() else -1)
-        self._run_apachectl("stop")
+        self.apache_stop()
         r = self._run_apachectl("start")
         if r.exit_code == 0:
             return 0 if self.is_dead() else -1
