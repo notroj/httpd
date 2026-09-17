@@ -38,7 +38,11 @@ def env(pytestconfig) -> MDTestEnv:
 @pytest.fixture(autouse=True, scope="package")
 def _md_package_scope(env):
     env.httpd_error_log.add_ignored_lognos([
-        "AH10085"   # There are no SSL certificates configured and no other module contributed any
+        "AH10085",  # There are no SSL certificates configured and no other module contributed any
+        # A child running an ACME renewal does not notice a stop, so
+        # the parent may have to signal it again, or kill it.
+        "AH00045",  # child process still did not exit, sending a SIGTERM
+        "AH00046",  # child process still did not exit, sending a SIGKILL
     ])
 
 

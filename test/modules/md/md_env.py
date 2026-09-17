@@ -441,7 +441,8 @@ class MDTestEnv(HttpdTestEnv):
     def get_content(self, domain, path, use_https=True):
         schema = "https" if use_https else "http"
         port = self.https_port if use_https else self.http_port
-        r = self.curl_get(f"{schema}://{domain}:{port}{path}")
+        r = self.curl_get(f"{schema}://{domain}:{port}{path}",
+                          options=self.PROBE_OPTIONS)
         assert r.exit_code == 0
         return r.stdout
 
@@ -449,7 +450,8 @@ class MDTestEnv(HttpdTestEnv):
         schema = "https" if use_https else "http"
         port = self.https_port if use_https else self.http_port
         url = f"{schema}://{domain}:{port}{path}"
-        r = self.curl_get(url, insecure=insecure)
+        r = self.curl_get(url, insecure=insecure,
+                          options=self.PROBE_OPTIONS)
         if r.exit_code != 0:
             log.error(f"curl get on {url} returned {r.exit_code}"
                       f"\nstdout: {r.stdout}"
