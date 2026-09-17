@@ -43,7 +43,7 @@ jobs:
       max-parallel: 20
       matrix:
         include:
-          - name: Python pytest test suites #1
+          - name: "Python pytest test suites #1"
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
@@ -54,7 +54,7 @@ jobs:
               TEST_PYTEST=1
               TEST_MD=1
               PYTEST_ARGS=-v -o faulthandler_timeout=240
-          - name: Python pytest test suites #2
+          - name: "Python pytest test suites #2"
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
@@ -65,7 +65,7 @@ jobs:
               TEST_PYTEST=1
               TEST_MD=1
               PYTEST_ARGS=-v -o faulthandler_timeout=240
-          - name: Python pytest test suites #3
+          - name: "Python pytest test suites #3"
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
@@ -76,7 +76,7 @@ jobs:
               TEST_PYTEST=1
               TEST_MD=1
               PYTEST_ARGS=-v -o faulthandler_timeout=240
-          - name: Python pytest test suites #4
+          - name: "Python pytest test suites #4"
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
@@ -87,7 +87,7 @@ jobs:
               TEST_PYTEST=1
               TEST_MD=1
               PYTEST_ARGS=-v -o faulthandler_timeout=240
-          - name: Python pytest test suites #5
+          - name: "Python pytest test suites #5"
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
@@ -98,7 +98,7 @@ jobs:
               TEST_PYTEST=1
               TEST_MD=1
               PYTEST_ARGS=-v -o faulthandler_timeout=240
-          - name: Python pytest test suites #6
+          - name: "Python pytest test suites #6"
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
