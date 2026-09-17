@@ -43,7 +43,7 @@ jobs:
       max-parallel: 20
       matrix:
         include:
-          - name: "Python pytest test suites #1"
+          - name: "md pytest #1"
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
@@ -53,8 +53,9 @@ jobs:
               NO_TEST_FRAMEWORK=1
               TEST_PYTEST=1
               TEST_MD=1
-              PYTEST_ARGS=-v -o faulthandler_timeout=240
-          - name: "Python pytest test suites #2"
+              PYHTTPD_TARGETS=modules/md
+              PYTEST_ARGS=-v -o faulthandler_timeout=240 --only=pyhttpd
+          - name: "md pytest #2"
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
@@ -64,8 +65,9 @@ jobs:
               NO_TEST_FRAMEWORK=1
               TEST_PYTEST=1
               TEST_MD=1
-              PYTEST_ARGS=-v -o faulthandler_timeout=240
-          - name: "Python pytest test suites #3"
+              PYHTTPD_TARGETS=modules/md
+              PYTEST_ARGS=-v -o faulthandler_timeout=240 --only=pyhttpd
+          - name: "md pytest #3"
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
@@ -75,8 +77,9 @@ jobs:
               NO_TEST_FRAMEWORK=1
               TEST_PYTEST=1
               TEST_MD=1
-              PYTEST_ARGS=-v -o faulthandler_timeout=240
-          - name: "Python pytest test suites #4"
+              PYHTTPD_TARGETS=modules/md
+              PYTEST_ARGS=-v -o faulthandler_timeout=240 --only=pyhttpd
+          - name: "md pytest #4"
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
@@ -86,8 +89,9 @@ jobs:
               NO_TEST_FRAMEWORK=1
               TEST_PYTEST=1
               TEST_MD=1
-              PYTEST_ARGS=-v -o faulthandler_timeout=240
-          - name: "Python pytest test suites #5"
+              PYHTTPD_TARGETS=modules/md
+              PYTEST_ARGS=-v -o faulthandler_timeout=240 --only=pyhttpd
+          - name: "md pytest #5"
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
@@ -97,8 +101,9 @@ jobs:
               NO_TEST_FRAMEWORK=1
               TEST_PYTEST=1
               TEST_MD=1
-              PYTEST_ARGS=-v -o faulthandler_timeout=240
-          - name: "Python pytest test suites #6"
+              PYHTTPD_TARGETS=modules/md
+              PYTEST_ARGS=-v -o faulthandler_timeout=240 --only=pyhttpd
+          - name: "md pytest #6"
             config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
             pkgs: nghttp2-client
             env: |
@@ -108,7 +113,80 @@ jobs:
               NO_TEST_FRAMEWORK=1
               TEST_PYTEST=1
               TEST_MD=1
-              PYTEST_ARGS=-v -o faulthandler_timeout=240
+              PYHTTPD_TARGETS=modules/md
+              PYTEST_ARGS=-v -o faulthandler_timeout=240 --only=pyhttpd
+          - name: "md pytest #7"
+            config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
+            pkgs: nghttp2-client
+            env: |
+              APR_VERSION=1.7.6
+              APU_VERSION=1.6.5
+              APU_CONFIG="--with-crypto"
+              NO_TEST_FRAMEWORK=1
+              TEST_PYTEST=1
+              TEST_MD=1
+              PYHTTPD_TARGETS=modules/md
+              PYTEST_ARGS=-v -o faulthandler_timeout=240 --only=pyhttpd
+          - name: "md pytest #8"
+            config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
+            pkgs: nghttp2-client
+            env: |
+              APR_VERSION=1.7.6
+              APU_VERSION=1.6.5
+              APU_CONFIG="--with-crypto"
+              NO_TEST_FRAMEWORK=1
+              TEST_PYTEST=1
+              TEST_MD=1
+              PYHTTPD_TARGETS=modules/md
+              PYTEST_ARGS=-v -o faulthandler_timeout=240 --only=pyhttpd
+          - name: "md pytest #9"
+            config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
+            pkgs: nghttp2-client
+            env: |
+              APR_VERSION=1.7.6
+              APU_VERSION=1.6.5
+              APU_CONFIG="--with-crypto"
+              NO_TEST_FRAMEWORK=1
+              TEST_PYTEST=1
+              TEST_MD=1
+              PYHTTPD_TARGETS=modules/md
+              PYTEST_ARGS=-v -o faulthandler_timeout=240 --only=pyhttpd
+          - name: "md pytest #10"
+            config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
+            pkgs: nghttp2-client
+            env: |
+              APR_VERSION=1.7.6
+              APU_VERSION=1.6.5
+              APU_CONFIG="--with-crypto"
+              NO_TEST_FRAMEWORK=1
+              TEST_PYTEST=1
+              TEST_MD=1
+              PYHTTPD_TARGETS=modules/md
+              PYTEST_ARGS=-v -o faulthandler_timeout=240 --only=pyhttpd
+          - name: "md pytest #11"
+            config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
+            pkgs: nghttp2-client
+            env: |
+              APR_VERSION=1.7.6
+              APU_VERSION=1.6.5
+              APU_CONFIG="--with-crypto"
+              NO_TEST_FRAMEWORK=1
+              TEST_PYTEST=1
+              TEST_MD=1
+              PYHTTPD_TARGETS=modules/md
+              PYTEST_ARGS=-v -o faulthandler_timeout=240 --only=pyhttpd
+          - name: "md pytest #12"
+            config: --enable-mods-shared=reallyall --with-mpm=event --enable-mpms-shared=all
+            pkgs: nghttp2-client
+            env: |
+              APR_VERSION=1.7.6
+              APU_VERSION=1.6.5
+              APU_CONFIG="--with-crypto"
+              NO_TEST_FRAMEWORK=1
+              TEST_PYTEST=1
+              TEST_MD=1
+              PYHTTPD_TARGETS=modules/md
+              PYTEST_ARGS=-v -o faulthandler_timeout=240 --only=pyhttpd
     runs-on: ${{ matrix.os == '' && 'ubuntu-latest' || matrix.os }}
     timeout-minutes: 75
     env:
@@ -214,6 +292,7 @@ jobs:
       if: failure() || cancelled()
       run: |
         mkdir -p test/gen/diag
+        curl -sk --max-time 10 https://localhost:14000/dir > test/gen/diag/pebble-dir.json || true
         ps -eLfww > test/gen/diag/ps.txt || true
         sudo ss -tanp > test/gen/diag/ss.txt || true
         for pid in $(pgrep -x httpd; pgrep -f pytest); do
@@ -222,10 +301,14 @@ jobs:
         done
         curl -sk --max-time 10 https://localhost:15000/roots/0 > test/gen/diag/pebble-root.pem || true
         curl -s --max-time 10 localhost:8055/ > test/gen/diag/challtestsrv.txt 2>&1 || true
+        # Go dumps all goroutines to stderr on SIGQUIT: test/gen/pebble.log
+        pkill -QUIT -x pebble || true
+        pkill -QUIT -x pebble-challtestsrv || true
+        sleep 3
     - uses: actions/upload-artifact@v7
       if: failure() || cancelled()
       with:
-        name: md-diag-${{ env.JOBID }}
+        name: md-diag-${{ env.JOBID }}-attempt${{ github.run_attempt }}
         path: |
           test/gen/diag/
           test/gen/pebble.log
@@ -250,7 +333,7 @@ jobs:
     - uses: actions/upload-artifact@v7
       if: failure()
       with:
-        name: error_log-${{ env.JOBID }}
+        name: error_log-${{ env.JOBID }}-attempt${{ github.run_attempt }}
         path: |
           **/config.log
           test/perl-framework/t/logs/error_log
