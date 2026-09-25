@@ -516,19 +516,14 @@ static int bio_filter_in_read(BIO *bio, char *in, int inlen)
         if (block == APR_BLOCK_READ 
             && APR_STATUS_IS_TIMEUP(inctx->rc)
             && APR_BRIGADE_EMPTY(inctx->bb)) {
-            SSLConnRec *sslconn = myConnConfig(inctx->f->c);
-
-            /* A timeout is a retryable read: the connection is still up, it
-             * is only this wait which is over.  Flagging it retryable keeps
-             * the SSL session usable - reporting an I/O error here would put
-             * the state machine into an error state, after which OpenSSL
-             * refuses to send a close_notify alert.  The timeout itself is
-             * reported out of band, as OpenSSL's own BIOs do for a datagram
-             * receive timeout. */
+            /* A timeout is a retryable read: the connection is still up,
+             * it is only this wait which is over.  Flagging it retryable
+             * keeps the SSL session usable - reporting an I/O error here
+             * would put the state machine into an error state, after which
+             * OpenSSL refuses to send a close_notify alert.  The timeout
+             * itself is reported through inctx->rc, as OpenSSL's own BIOs
+             * report a datagram receive timeout out of band. */
             BIO_set_retry_read(bio);
-            if (sslconn) {
-                sslconn->read_timedout = 1;
-            }
             return -1;
         }
         if (inctx->rc != APR_SUCCESS) {

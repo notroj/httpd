@@ -1,3 +1,4 @@
-  *) mod_ssl: Send a close_notify alert when a client times out during a
-     renegotiation or TLSv1.3 Post-Handshake Authentication, rather than
-     dropping the connection without one.  [Joe Orton]
+  *) mod_ssl: Report a read timeout to OpenSSL as a retryable read rather
+     than an I/O error, so that a client which times out in a handshake,
+     renegotiation or TLSv1.3 Post-Handshake Authentication is still sent a
+     close_notify alert.  [Joe Orton]
