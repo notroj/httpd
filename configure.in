@@ -836,9 +836,15 @@ if test "$enable_test_apps" = "yes" -a -d "./test"; then
 
   TEST_APPS_SUMMARY="yes (mod_aptest, mod_h1test, mod_h2test, h2ws)"
   other_targets="$other_targets test-apps"
+  TEST_APPS_TARGET=test-apps
+  TEST_APPS_DIR="`pwd`/test/test-modules"
 else
   TEST_APPS_SUMMARY="no"
+  TEST_APPS_TARGET=""
+  TEST_APPS_DIR=""
 fi
+APACHE_SUBST(TEST_APPS_TARGET)
+APACHE_SUBST(TEST_APPS_DIR)
 
 PRE_SHARED_CMDS='echo ""'
 POST_SHARED_CMDS='echo ""'

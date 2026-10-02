@@ -57,6 +57,9 @@ $(mod_h2test_DIR)/mod_h2test.la: $(mod_h2test_DIR)/mod_h2test.slo
 	    $(mod_h2test_DIR)/mod_h2test.lo
 
 test-modules: $(mod_aptest_DIR)/mod_aptest.la $(mod_h1test_DIR)/mod_h1test.la $(mod_h2test_DIR)/mod_h2test.la
+	mkdir -p $(TEST_APPS_DIR)
+	cp -p $(mod_aptest_DIR)/.libs/mod_aptest.so $(mod_h1test_DIR)/.libs/mod_h1test.so \
+	    $(mod_h2test_DIR)/.libs/mod_h2test.so $(TEST_APPS_DIR)/
 
 h2ws-client:
 	cd clients && $(MAKE) $(MFLAGS) h2ws

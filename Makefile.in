@@ -518,10 +518,10 @@ check/modules/stamp: build/config_vars.mk
 	find server/mpm -name \*.so -exec ln -s $(top_builddir)/{} check/modules/ \;
 	date > $@
 
-check-pytest: check-tree check/bin/apachectl check/config.ini check/modules/stamp
+check-pytest: check-tree check/bin/apachectl check/config.ini check/modules/stamp $(TEST_APPS_TARGET)
 	PYHTTPD_CONFIG=$(top_builddir)/check/config.ini $(PYTEST3) $(PYTEST_DIRS)
 
-check-all-pytest: check-tree check/bin/apachectl check/config.ini check/modules/stamp
+check-all-pytest: check-tree check/bin/apachectl check/config.ini check/modules/stamp $(TEST_APPS_TARGET)
 	PYHTTPD_CONFIG=$(top_builddir)/check/config.ini $(SHELL) $(top_srcdir)/test/run-all-tests.sh --apxs "$(top_builddir)/check/bin/apxs" $(PYTEST_ARGS)
 
 # Runs all configured/available test targets.
