@@ -54,6 +54,12 @@ else
     CONFIG="$CONFIG --with-apr-util=/usr"
 fi
 
+# Build the pyhttpd test modules and clients with make rather than
+# with apxs at test time.
+if test -v TEST_PYTEST; then
+    CONFIG="$CONFIG --enable-test-apps"
+fi
+
 if test -v TEST_OPENSSL3; then
     CONFIG="$CONFIG --with-ssl=$HOME/root/openssl3"
     export PATH=$HOME/root/openssl3/bin:$PATH
