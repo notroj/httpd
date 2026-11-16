@@ -691,6 +691,7 @@ typedef struct {
  * for safety.
  */
 typedef struct {
+    pid_t           pid; /* ignored unless MODSSL_USE_SSLRAND is defined */
     apr_pool_t     *pPool;
     BOOL            bFixed;
 
@@ -703,11 +704,8 @@ typedef struct {
     ap_socache_instance_t *sesscache_context;
 
     apr_global_mutex_t   *pMutex;
-
-#ifdef MODSSL_USE_SSLRAND
-    pid_t           pid; /* used for seeding after fork() */
+    /* ignored (and left empty) unless MODSSL_USE_SSLRAND is defined */
     apr_array_header_t   *aRandSeed;
-#endif
     apr_hash_t     *tVHostKeys;
 
     /* A hash table of pointers to ssl_asn1_t structures.  The structures

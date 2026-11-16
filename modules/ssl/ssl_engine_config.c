@@ -66,10 +66,8 @@ SSLModConfigRec *ssl_config_global_create(server_rec *s)
 #ifdef HAVE_TLSEXT
     mc->snivh_policy           = MODSSL_SNIVH_SECURE;
 #endif
-#ifdef MODSSL_USE_SSLRAND
     mc->aRandSeed              = apr_array_make(pool, 4,
                                                 sizeof(ssl_randseed_t));
-#endif
     mc->tVHostKeys             = apr_hash_make(pool);
     mc->tPrivateKey            = apr_hash_make(pool);
 #if defined(HAVE_OPENSSL_ENGINE_H) && defined(HAVE_ENGINE_INIT)
