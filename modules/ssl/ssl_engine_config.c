@@ -732,7 +732,8 @@ const char *ssl_cmd_SSLRandomSeed(cmd_parms *cmd,
 #else
     ap_log_error(APLOG_MARK, APLOG_INFO, 0, cmd->server, APLOGNO(10235)
                  "SSLRandomSeed is deprecated and has no effect "
-                 "with OpenSSL 1.1.1 and later");
+                 "with OpenSSL 1.1.1 and later, unless httpd is "
+                 "built with --enable-sslrandom");
 #endif
 
     return NULL;

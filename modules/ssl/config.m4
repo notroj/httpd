@@ -49,6 +49,14 @@ APACHE_MODULE(ssl, [SSL/TLS support (mod_ssl)], $ssl_objs, , most, [
     fi
 ])
 
+AC_ARG_ENABLE(sslrandom,
+  [APACHE_HELP_STRING(--enable-sslrandom,Enable SSLRandomSeed with OpenSSL 1.1.1 and later)],
+  [if test "$enableval" = "yes"; then
+     AC_DEFINE([MODSSL_ENABLE_SSLRANDOM], 1,
+               [Enable SSLRandomSeed with OpenSSL 1.1.1 and later])
+   fi
+])
+
 # Ensure that other modules can pick up mod_ssl.h
 APR_ADDTO(INCLUDES, [-I\$(top_srcdir)/$modpath_current])
 

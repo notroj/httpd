@@ -1,3 +1,3 @@
-  *) mod_ssl: With OpenSSL 1.1.1 and later, SSLRandomSeed is now
-     ignored.  OpenSSL must be configured with a suitable entropy
-     source, or mod_ssl will fail to start up.  PR 70314.  [Joe Orton]
+  *) mod_ssl: With OpenSSL 1.1.1 and later, SSLRandomSeed is now ignored
+     unless httpd is built with --enable-sslrandom, and mod_ssl fails to
+     start up if OpenSSL has no entropy source.  PR 70314.  [Joe Orton]

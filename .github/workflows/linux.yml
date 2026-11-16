@@ -113,8 +113,8 @@ jobs:
           - name: Prefork MPM, all-modules (except cgid)
             config: --enable-mods-shared=reallyall --with-mpm=prefork --disable-cgid
           # -------------------------------------------------------------------------
-          - name: Worker MPM, all-modules
-            config: --enable-mods-shared=reallyall --with-mpm=worker
+          - name: Worker MPM, all-modules, SSLRandomSeed enabled
+            config: --enable-mods-shared=reallyall --with-mpm=worker --enable-sslrandom
           # -------------------------------------------------------------------------
           - name: Shared MPMs, all-modules
             config: --enable-mods-shared=reallyall --enable-mpms-shared=all

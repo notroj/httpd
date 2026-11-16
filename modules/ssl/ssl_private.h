@@ -184,7 +184,9 @@
 #endif
 #endif /* defined(LIBRESSL_VERSION_NUMBER) */
 
-#if OPENSSL_VERSION_NUMBER < 0x10101000
+/* SSLRandomSeed is ignored with OpenSSL 1.1.1 and later, unless
+ * configured with --enable-sslrandom. */
+#if OPENSSL_VERSION_NUMBER < 0x10101000 || defined(MODSSL_ENABLE_SSLRANDOM)
 #define MODSSL_USE_SSLRAND
 #endif
 
