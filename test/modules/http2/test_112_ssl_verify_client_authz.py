@@ -23,6 +23,7 @@ from .env import H2Conf, H2TestEnv
 # even complete its handshake, and the authz provider's own logic (the
 # part this bug was in) would never be reached for that case.
 @pytest.mark.skipif(condition=H2TestEnv.is_unsupported(), reason="mod_http2 not supported here")
+@pytest.mark.skipif(H2TestEnv.get_ssl_module() != "mod_ssl", reason="only for mod_ssl")
 class TestSslVerifyClientAuthz:
 
     @pytest.fixture(autouse=True, scope='class')

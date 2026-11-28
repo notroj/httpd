@@ -16,17 +16,17 @@ class TestAutoindex:
             LogLevel autoindex:trace1
             <Directory "{env.server_docs_dir}/autoindex/listing">
                 Options +Indexes
+                IndexOptions FancyIndexing ScanHTMLTitles
+            </Directory>
+            <Directory "{env.server_docs_dir}/autoindex/listing">
                 <If "%{{QUERY_STRING}} == 'xhtml'">
                     IndexOptions XHTML Charset=ISO-8859-2
                 </If>
                 <ElseIf "%{{QUERY_STRING}} == 'nocharset'">
                     IndexOptions Charset=
                 </ElseIf>
-                <ElseIf "%{{QUERY_STRING}} == 'charset'">
-                    IndexOptions Charset=ISO-8859-2
-                </ElseIf>
                 <Else>
-                    IndexOptions FancyIndexing ScanHTMLTitles
+                    IndexOptions Charset=ISO-8859-2
                 </Else>
             </Directory>
             """),
@@ -48,7 +48,7 @@ class TestAutoindex:
     def test_generators_002_02_charset_meta_html(self, env):
         """IndexOptions Charset= adds a <meta> to the HTML 4.01 document,
         before <title>, without XHTML-style self-closing."""
-        r = env.curl_get(env.mkurl("http", "autoindex", "/listing/?charset"))
+        r = env.curl_get(env.mkurl("http", "autoindex", "/listing/"))
         assert r.response["status"] == 200
         body = r.response["body"].decode()
         meta = '<meta http-equiv="Content-Type" content="text/html; ' \

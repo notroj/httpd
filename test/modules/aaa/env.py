@@ -5,7 +5,7 @@ import inspect
 import logging
 import os
 import sqlite3
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pyhttpd.env import HttpdTestEnv, HttpdTestSetup
 from pyhttpd.result import ExecResult
@@ -103,6 +103,27 @@ class AAATestEnv(HttpdTestEnv):
     @property
     def digest_pwfile2(self) -> str:
         return self._digest_pwfile2
+
+    @staticmethod
+    def write_basic_pwfile(path: str, users: Dict[str, str]):
+        """Write a Basic auth password file holding `users`, a dict of
+        user name to password, replacing the file atomically.  The
+        passwords are stored as {SHA} hashes, which need no htpasswd."""
+        with open(path + ".tmp", 'w') as fd:
+            for user, password in users.items():
+                sha = base64.b64encode(
+                    hashlib.sha1(password.encode()).digest()).decode()
+                fd.write(f"{user}:{{SHA}}{sha}\n")
+        os.replace(path + ".tmp", path)
+
+    def write_digest_pwfile(self, path: str, users: Dict[str, str]):
+        """As write_basic_pwfile(), for a Digest password file in REALM."""
+        with open(path + ".tmp", 'w') as fd:
+            for user, password in users.items():
+                ha1 = hashlib.md5(
+                    f"{user}:{self.REALM}:{password}".encode()).hexdigest()
+                fd.write(f"{user}:{self.REALM}:{ha1}\n")
+        os.replace(path + ".tmp", path)
 
     @contextlib.contextmanager
     def preserved_test_conf(self):
